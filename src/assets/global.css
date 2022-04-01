@@ -6,3 +6,8 @@ html,body,div{
 html,body{
     height: 100%;
 }
+
+.el-icon-arrow-down:before {
+    content: "\e6df";
+    color: white;
+}
