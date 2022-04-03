@@ -18,7 +18,7 @@
           <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-s-custom" style="color:#fff"></i>
-              <span>用户管理</span>
+              <span>学生信息管理</span>
             </template>
             <el-menu-item index="1-1">选项1</el-menu-item>
             <el-menu-item index="1-2">选项2</el-menu-item>
@@ -61,25 +61,73 @@
             </el-dropdown-menu>
           </el-dropdown>
         </el-header>
-        
+
         <!-- 表格主体部分 -->
         <el-main>
-          <!-- 表格搜索框 -->
-          <div style="padding:10px 0">
-            <el-input style="width:300px;" 
-                      placeholder="请输入内容"
-                      prefix-icon="el-icon-search">
-            </el-input>
-            <el-button style="margin-left:5px;" type="primary">搜索</el-button>
+          <!-- 页签 -->
+          <div style="margin-bottom:30px">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+              <el-breadcrumb-item>学生信息管理</el-breadcrumb-item>
+            </el-breadcrumb>
           </div>
+          <!-- 表格搜索框 -->
+          <div style="margin:10px 0; text-align:left">
+            <el-input style="width:200px; margin-right:5px;" 
+                      placeholder="按学号搜索"
+                      prefix-icon="el-icon-user"
+                      size="medium">
+            </el-input>
+            <el-input style="width:200px; margin-right:5px;" 
+                      placeholder="按性别搜索"
+                      prefix-icon="el-icon-female"
+                      size="medium">
+            </el-input>
+            <el-input style="width:200px; margin-right:5px;" 
+                      placeholder="按专业搜索"
+                      prefix-icon="el-icon-tickets"
+                      size="medium">
+            </el-input>
+            <el-input style="width:200px; margin-right:5px;" 
+                      placeholder="按年级搜索"
+                      prefix-icon="el-icon-collection-tag"
+                      size="medium">
+            </el-input>
+            <el-input style="width:200px; margin-right:5px;" 
+                      placeholder="按心理状态搜索"
+                      prefix-icon="el-icon-sunny"
+                      size="medium">
+            </el-input>
+            <el-button style="margin-left:5px;" type="primary" plain size="medium" icon="el-icon-search">搜索</el-button>
+          </div>
+
+          <div style="margin:20px 0;text-align:left;">
+            <el-button type="primary"><i class="el-icon-circle-plus-outline" style="margin-right:5px;"></i>新增</el-button>
+            <el-button type="danger"><i class="el-icon-delete" style="margin-right:5px;"></i>批量删除</el-button>
+          </div>
+
           <el-table :data="tableData" border stripe :header-cell-style="{background:'rgb(214 216 221)'}">
             <!-- 表格内容 -->
-            <el-table-column prop="date" label="日期" width="140">
+            <el-table-column prop="date" label="学号" width="150">
             </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
+            <el-table-column prop="name" label="姓名" width="150">
             </el-table-column>
-            <el-table-column prop="address" label="地址">
+            <el-table-column prop="sex" label="性别" width="150">
             </el-table-column>
+            <el-table-column prop="acdamic" label="学院" width="200">
+            </el-table-column>
+            <el-table-column prop="major" label="专业" width="150">
+            </el-table-column>
+            <el-table-column prop="grade" label="年级" width="150">
+            </el-table-column>
+            <el-table-column prop="state" label="心理状态" width="160">
+            </el-table-column>
+            <el-table-column label="操作">
+              <el-button type="primary" icon="el-icon-edit" circle></el-button>
+              <el-button type="warning" icon="el-icon-star-off" circle></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle></el-button> 
+            </el-table-column>
+        
           </el-table>
           <!-- 分页功能 -->
           <div style="padding:10px 0; text-align:center;">
@@ -108,12 +156,12 @@ export default {
   },
   data() {
       const item = {
-        date: '2016-05-02',
+        date: '221801438',
         name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
+        acdamic: '计算机与大数据学院'
       };
       return {
-        tableData: Array(10).fill(item),
+        tableData: Array(12).fill(item),
         collapseBtnClass:'el-icon-s-fold',    //收缩按钮
         isCollapse:false,       //默认是展开的
         sideWidth:200,
