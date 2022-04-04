@@ -108,13 +108,13 @@
 
           <el-table :data="tableData" border stripe :header-cell-style="{background:'rgb(214 216 221)'}">
             <!-- 表格内容 -->
-            <el-table-column prop="date" label="学号" width="150">
+            <el-table-column prop="sno" label="学号" width="150">
             </el-table-column>
             <el-table-column prop="name" label="姓名" width="150">
             </el-table-column>
             <el-table-column prop="sex" label="性别" width="150">
             </el-table-column>
-            <el-table-column prop="acdamic" label="学院" width="200">
+            <el-table-column prop="academy" label="学院" width="200">
             </el-table-column>
             <el-table-column prop="major" label="专业" width="150">
             </el-table-column>
@@ -132,10 +132,11 @@
           <!-- 分页功能 -->
           <div style="padding:10px 0; text-align:center;">
             <el-pagination
-              
-              :page-size="10"
+              @current-change="handleCurrentChange"
+              :current-page="pageNum"
+              :page-size="2"
               layout="prev, pager, next, jumper"
-              :total="100">
+              :total="total">
             </el-pagination>
           </div>
         </el-main>
@@ -154,20 +155,28 @@ export default {
   components: {
     HelloWorld
   },
+
+  //数据
   data() {
-      const item = {
-        date: '221801438',
-        name: '王小虎',
-        acdamic: '计算机与大数据学院'
-      };
       return {
-        tableData: Array(12).fill(item),
+        tableData: [],
+        total:0,          //展示的数据总书
+        pageNum:1,        //默认在哪一页
+        pageSize:2,       //默认的页面中项目数
         collapseBtnClass:'el-icon-s-fold',    //收缩按钮
         isCollapse:false,       //默认是展开的
         sideWidth:200,
         logoTextshow:true   //名称默认是显示的
       }
   },
+
+  //项目创建
+  created() {
+    this.load()
+  },
+
+
+  //各种方法
   methods:{
     collapse(){  //点击展开收缩按钮触发
       this.isCollapse = !this.isCollapse
@@ -180,6 +189,20 @@ export default {
         this.sideWidth = 200
         this.collapseBtnClass = 'el-icon-s-fold'
       }
+    },
+    //请求分页查询数据
+    load(){
+      fetch("http://localhost:9090/students/page?pageNum="+this.pageNum+"&pageSize="+this.pageSize).then(res => res.json()).then(res =>{
+        console.log(res);
+        this.tableData = res.data;
+        this.total = res.total;
+      })
+    },
+    //页面跳转相应（每页的总个数写定）
+    handleCurrentChange(pageNum){
+      console.log(pageNum)
+      this.pageNum = pageNum
+      this.load()
     }
   }
 }
