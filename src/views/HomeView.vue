@@ -75,30 +75,35 @@
           <div style="margin:10px 0; text-align:left">
             <el-input style="width:200px; margin-right:5px;" 
                       placeholder="按学号搜索"
-                      prefix-icon="el-icon-user"
-                      size="medium">
+                      prefix-icon="el-icon-star-off"
+                      size="medium"
+                      v-model="sno">
             </el-input>
             <el-input style="width:200px; margin-right:5px;" 
-                      placeholder="按性别搜索"
-                      prefix-icon="el-icon-female"
-                      size="medium">
+                      placeholder="按姓名搜索"
+                      prefix-icon="el-icon-user"
+                      size="medium"
+                      v-model="name">
             </el-input>
             <el-input style="width:200px; margin-right:5px;" 
                       placeholder="按专业搜索"
                       prefix-icon="el-icon-tickets"
-                      size="medium">
+                      size="medium"
+                      v-model="major">
             </el-input>
             <el-input style="width:200px; margin-right:5px;" 
                       placeholder="按年级搜索"
                       prefix-icon="el-icon-collection-tag"
-                      size="medium">
+                      size="medium"
+                      v-model="grade">
             </el-input>
             <el-input style="width:200px; margin-right:5px;" 
                       placeholder="按心理状态搜索"
                       prefix-icon="el-icon-sunny"
-                      size="medium">
+                      size="medium"
+                      v-model="state">
             </el-input>
-            <el-button style="margin-left:5px;" type="primary" plain size="medium" icon="el-icon-search">搜索</el-button>
+            <el-button style="margin-left:5px;" type="primary" plain size="medium" icon="el-icon-search" @click="load()">搜索</el-button>
           </div>
 
           <div style="margin:20px 0;text-align:left;">
@@ -163,6 +168,11 @@ export default {
         total:0,          //展示的数据总书
         pageNum:1,        //默认在哪一页
         pageSize:2,       //默认的页面中项目数
+        sno:"",               //搜索的学号默认是空
+        name:"",               //搜索的姓名默认是空
+        major:"",               //搜索的专业默认是空
+        grade:"",               //搜索的年级默认是空
+        state:"",               //搜索的心理状态默认是空
         collapseBtnClass:'el-icon-s-fold',    //收缩按钮
         isCollapse:false,       //默认是展开的
         sideWidth:200,
@@ -192,7 +202,9 @@ export default {
     },
     //请求分页查询数据
     load(){
-      fetch("http://localhost:9090/students/page?pageNum="+this.pageNum+"&pageSize="+this.pageSize).then(res => res.json()).then(res =>{
+      fetch("http://localhost:9090/students/page?pageNum="+this.pageNum+"&pageSize="+this.pageSize+
+      "&sno="+this.sno+"&name="+this.name+"&major="+this.major+"&grade="+this.grade+
+      "&state="+this.state).then(res => res.json()).then(res =>{
         console.log(res);
         this.tableData = res.data;
         this.total = res.total;
