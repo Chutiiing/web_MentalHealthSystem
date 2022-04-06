@@ -97,12 +97,19 @@
                       size="medium"
                       v-model="grade">
             </el-input>
-            <el-input style="width:200px; margin-right:5px;" 
-                      placeholder="按心理状态搜索"
-                      prefix-icon="el-icon-sunny"
-                      size="medium"
-                      v-model="state">
-            </el-input>
+            
+            <el-select v-model="state" 
+                       placeholder="按心理状态搜索"
+                       style="width:200px; margin-right:5px;"
+                       prefix-icon="el-icon-sunny"
+                       size="medium">
+              <el-option
+                v-for="item in optionstate"
+                :key="item.state"
+                :label="item.label"
+                :value="item.state">
+              </el-option>
+            </el-select>
             <el-button style="margin-left:5px;" type="primary" plain size="medium" icon="el-icon-search" @click="load()">搜索</el-button>
           </div>
 
@@ -172,6 +179,16 @@ export default {
         name:"",               //搜索的姓名默认是空
         major:"",               //搜索的专业默认是空
         grade:"",               //搜索的年级默认是空
+        optionstate: [{
+          state: '',
+          label: '全部状态'
+        }, {
+          state: '良好',
+          label: '良好'
+        },{
+          state: '危险',
+          label: '危险'
+        }],
         state:"",               //搜索的心理状态默认是空
         collapseBtnClass:'el-icon-s-fold',    //收缩按钮
         isCollapse:false,       //默认是展开的
