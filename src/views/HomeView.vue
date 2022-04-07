@@ -421,6 +421,15 @@ export default {
     delBatch(){
       let snos = this.multipleSelection.map(v => v.sno)
       console.log(snos);
+      request.post("/students/batch",snos).then(res =>{
+        if(res){
+            this.$message.success("批量删除成功")
+            this.load();     //刷新页面
+          }
+          else{
+            this.$message.error("批量删除失败")
+          }
+      })
     }
   }
 }
