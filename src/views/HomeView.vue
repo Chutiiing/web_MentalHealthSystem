@@ -132,16 +132,28 @@
 
           <div style="margin:20px 0;text-align:left;">
             <el-button type="primary" @click="handleAdd"><i class="el-icon-circle-plus-outline" style="margin-right:5px;"></i>新增</el-button>
-            <el-button type="danger"><i class="el-icon-delete" style="margin-right:5px;"></i>批量删除</el-button>
+            <template>
+              <el-popconfirm
+                title="确定删除这些记录吗？"
+                @confirm = "delBatch"
+                style="margin-left:10px"
+              >
+              <el-button slot="reference" type="danger"><i class="el-icon-delete" style="margin-right:5px;"></i>批量删除</el-button> 
+              </el-popconfirm>
+            </template>
           </div>
 
-          <el-table :data="tableData" border stripe :header-cell-style="{background:'rgb(214 216 221)'}">
+          <el-table :data="tableData" border stripe :header-cell-style="{background:'rgb(214 216 221)'}" @selection-change="handleSelectionChange">
             <!-- 表格内容 -->
-            <el-table-column prop="sno" label="学号" width="150">
+            <el-table-column
+              type="selection"
+              width="50">
             </el-table-column>
-            <el-table-column prop="name" label="姓名" width="150">
+            <el-table-column prop="sno" label="学号" width="130">
             </el-table-column>
-            <el-table-column prop="sex" label="性别" width="150">
+            <el-table-column prop="name" label="姓名" width="130">
+            </el-table-column>
+            <el-table-column prop="sex" label="性别" width="130">
             </el-table-column>
             <el-table-column prop="academy" label="学院" width="200">
             </el-table-column>
@@ -152,9 +164,20 @@
             <el-table-column prop="state" label="心理状态" width="160">
             </el-table-column>
             <el-table-column label="操作">
-              <el-button type="primary" icon="el-icon-edit" circle></el-button>
-              <el-button type="warning" icon="el-icon-star-off" circle></el-button>
-              <el-button type="danger" icon="el-icon-delete" circle></el-button> 
+              <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.row)"></el-button>
+                <el-button type="warning" icon="el-icon-star-off" circle></el-button>
+                <!-- 删除确认 -->
+                <template>
+                  <el-popconfirm
+                    title="确定删除这一条记录吗？"
+                    @confirm = "handleDel(scope.row.sno)"
+                    style="margin-left:10px"
+                  >
+                    <el-button slot="reference" type="danger" icon="el-icon-delete" circle></el-button> 
+                  </el-popconfirm>
+                </template>
+              </template>
             </el-table-column>
         
           </el-table>
@@ -169,17 +192,19 @@
             </el-pagination>
           </div>
 
-          <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
           <el-dialog title="学生信息" :visible.sync="dialogFormVisible" width="30%">
             <el-form :model="form" label-width="100px" size="small">
               <el-form-item label="学号">
-                <el-input v-model="form.sno" autocomplete="off"></el-input>
+                <el-input v-model="form.sno" autocomplete="off" :disabled="snoInput"></el-input>
               </el-form-item>
               <el-form-item label="姓名">
                 <el-input v-model="form.name" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item label="性别">
-                <el-input v-model="form.sex" autocomplete="off"></el-input>
+                <el-select v-model="form.sex" placeholder="请选择性别">
+                  <el-option label="女" value="女"></el-option>
+                  <el-option label="男" value="男"></el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="学院">
                 <el-input v-model="form.academy" autocomplete="off"></el-input>
@@ -273,7 +298,10 @@ export default {
         dialogFormVisible:false,   //对话框弹窗
         form:{
           password: "123456"
-        }
+        },
+        flag:true,       //默认是新增
+        snoInput:false,     //学号的文本框默认是可以输入
+        multipleSelection:[]     //多选数组
       }
   },
 
@@ -299,7 +327,7 @@ export default {
     },
     //请求分页查询数据
     load(){
-      request.get("http://localhost:9090/students/page",{
+      request.get("/students/page",{
         params:{
           pageNum: this.pageNum,
           pageSize: 4,
@@ -330,22 +358,69 @@ export default {
       this.state = "";
       this.load();
     },
+    //新增用户数据
     handleAdd(){
-      this.dialogFormVisible = true;   //显示弹窗
       this.form = {};     //form对象置空
+      this.flag = true;
+      this.snoInput = false;   //可输入学号
+      this.dialogFormVisible = true;   //显示弹窗
     },
+    //编辑用户信息
+    handleEdit(row){
+      this.form = row;
+      this.flag = false;
+      this.snoInput = true;    //学号不可修改
+      this.dialogFormVisible = true;
+    },
+    //保存修改
     save(){
       this.dialogFormVisible = false;
-      this.form.password = "123456";              //默认密码
-      request.post("http://localhost:9090/students/insert",this.form).then(res =>{
+      //新增
+      if(this.flag){  
+        this.form.password = "123456";              //默认密码
+        request.post("/students/insert",this.form).then(res =>{
+          if(res){
+            this.$message.success("新增成功")
+            this.load();     //刷新页面
+          }
+          else{
+            this.$message.error("新增失败")
+          }
+        })
+      }
+      //修改
+      else{
+        request.post("/students/update",this.form).then(res =>{
+          if(res){
+            this.$message.success("修改成功")
+            this.load();     //刷新页面
+          }
+          else{
+            this.$message.error("修改失败")
+          }
+        })
+      }
+    },
+    //删除
+    handleDel(sno){
+      request.delete("/students/del/"+sno).then(res =>{
         if(res){
-          this.$message.success("新增成功")
-        }
-        else{
-          this.$message.error("新增失败")
-        }
+            this.$message.success("删除成功")
+            this.load();     //刷新页面
+          }
+          else{
+            this.$message.error("删除失败")
+          }
       })
-      this.load();     //刷新页面
+    },
+    //批量删除
+    handleSelectionChange(val){
+      console.log(val);
+      this.multipleSelection = val;
+    },
+    delBatch(){
+      let snos = this.multipleSelection.map(v => v.sno)
+      console.log(snos);
     }
   }
 }
