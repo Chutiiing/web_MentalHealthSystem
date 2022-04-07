@@ -77,27 +77,35 @@
                       placeholder="按学号搜索"
                       prefix-icon="el-icon-star-off"
                       size="medium"
-                      v-model="sno">
+                      v-model="sno"
+                      clearable>
             </el-input>
             <el-input style="width:200px; margin-right:5px;" 
                       placeholder="按姓名搜索"
                       prefix-icon="el-icon-user"
                       size="medium"
-                      v-model="name">
+                      v-model="name"
+                      clearable>
             </el-input>
             <el-input style="width:200px; margin-right:5px;" 
                       placeholder="按专业搜索"
                       prefix-icon="el-icon-tickets"
                       size="medium"
-                      v-model="major">
+                      v-model="major"
+                      clearable>
             </el-input>
-            <el-input style="width:200px; margin-right:5px;" 
-                      placeholder="按年级搜索"
-                      prefix-icon="el-icon-collection-tag"
-                      size="medium"
-                      v-model="grade">
-            </el-input>
-            
+            <el-select v-model="grade" 
+                       placeholder="按年级搜索"
+                       style="width:200px; margin-right:5px;"
+                       prefix-icon="el-icon-collection-tag"
+                       size="medium">
+              <el-option
+                v-for="item in optiongrade"
+                :key="item.grade"
+                :label="item.label"
+                :value="item.grade">
+              </el-option>
+            </el-select>
             <el-select v-model="state" 
                        placeholder="按心理状态搜索"
                        style="width:200px; margin-right:5px;"
@@ -110,11 +118,20 @@
                 :value="item.state">
               </el-option>
             </el-select>
-            <el-button style="margin-left:5px;" type="primary" plain size="medium" icon="el-icon-search" @click="load()">搜索</el-button>
+            <el-button style="margin-left:5px;" 
+                       type="primary" 
+                       plain size="medium" 
+                       icon="el-icon-search" 
+                       @click="load">搜索</el-button>
+            <el-button style="margin-left:5px;" 
+                       type="warning" 
+                       plain size="medium" 
+                       icon="el-icon-refresh-left" 
+                       @click="reset">重置</el-button>
           </div>
 
           <div style="margin:20px 0;text-align:left;">
-            <el-button type="primary"><i class="el-icon-circle-plus-outline" style="margin-right:5px;"></i>新增</el-button>
+            <el-button type="primary" @click="handleAdd"><i class="el-icon-circle-plus-outline" style="margin-right:5px;"></i>新增</el-button>
             <el-button type="danger"><i class="el-icon-delete" style="margin-right:5px;"></i>批量删除</el-button>
           </div>
 
@@ -146,13 +163,52 @@
             <el-pagination
               @current-change="handleCurrentChange"
               :current-page="pageNum"
-              :page-size="2"
+              :page-size="4"
               layout="prev, pager, next, jumper"
               :total="total">
             </el-pagination>
           </div>
-        </el-main>
 
+          <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
+          <el-dialog title="学生信息" :visible.sync="dialogFormVisible" width="30%">
+            <el-form :model="form" label-width="100px" size="small">
+              <el-form-item label="学号">
+                <el-input v-model="form.sno" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="姓名">
+                <el-input v-model="form.name" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="性别">
+                <el-input v-model="form.sex" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="学院">
+                <el-input v-model="form.academy" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="专业">
+                <el-input v-model="form.major" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="年级">
+                <el-select v-model="form.grade" placeholder="请选择年级" >
+                  <el-option label="18" value="18"></el-option>
+                  <el-option label="19" value="19"></el-option>
+                  <el-option label="20" value="20"></el-option>
+                  <el-option label="21" value="21"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="心理状态">
+                <el-select v-model="form.state" placeholder="请选择心理状态">
+                  <el-option label="良好" value="良好"></el-option>
+                  <el-option label="危险" value="危险"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="save">确 定</el-button>
+            </div>
+          </el-dialog>
+
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -161,6 +217,7 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
+import request from '@/utils/request'
 
 export default {
   name: 'HomeView',
@@ -174,11 +231,29 @@ export default {
         tableData: [],
         total:0,          //展示的数据总书
         pageNum:1,        //默认在哪一页
-        pageSize:2,       //默认的页面中项目数
+        pageSize:4,       //默认的页面中项目数
         sno:"",               //搜索的学号默认是空
         name:"",               //搜索的姓名默认是空
-        major:"",               //搜索的专业默认是空
-        grade:"",               //搜索的年级默认是空
+        major:"",               
+        //搜索的专业默认是空
+        optiongrade: [{
+          grade: '',
+          label: '所有年级'
+        }, {
+          grade: '18',
+          label: '18'
+        },{
+          grade: '19',
+          label: '19'
+        },{
+          grade: '20',
+          label: '20'
+        },{
+          grade: '21',
+          label: '21'
+        }],
+        grade:"",               
+        //搜索的年级默认是空
         optionstate: [{
           state: '',
           label: '全部状态'
@@ -190,10 +265,15 @@ export default {
           label: '危险'
         }],
         state:"",               //搜索的心理状态默认是空
+
         collapseBtnClass:'el-icon-s-fold',    //收缩按钮
         isCollapse:false,       //默认是展开的
         sideWidth:200,
-        logoTextshow:true   //名称默认是显示的
+        logoTextshow:true,   //名称默认是显示的
+        dialogFormVisible:false,   //对话框弹窗
+        form:{
+          password: "123456"
+        }
       }
   },
 
@@ -219,9 +299,17 @@ export default {
     },
     //请求分页查询数据
     load(){
-      fetch("http://localhost:9090/students/page?pageNum="+this.pageNum+"&pageSize="+this.pageSize+
-      "&sno="+this.sno+"&name="+this.name+"&major="+this.major+"&grade="+this.grade+
-      "&state="+this.state).then(res => res.json()).then(res =>{
+      request.get("http://localhost:9090/students/page",{
+        params:{
+          pageNum: this.pageNum,
+          pageSize: 4,
+          sno: this.sno,
+          name: this.name,
+          major: this.major,
+          grade: this.grade,
+          state: this.state
+        }
+      }).then(res =>{
         console.log(res);
         this.tableData = res.data;
         this.total = res.total;
@@ -232,6 +320,32 @@ export default {
       console.log(pageNum)
       this.pageNum = pageNum
       this.load()
+    },
+    //重置按钮
+    reset(){
+      this.sno = "";
+      this.name = "";
+      this.major = "";
+      this.grade = "";
+      this.state = "";
+      this.load();
+    },
+    handleAdd(){
+      this.dialogFormVisible = true;   //显示弹窗
+      this.form = {};     //form对象置空
+    },
+    save(){
+      this.dialogFormVisible = false;
+      this.form.password = "123456";              //默认密码
+      request.post("http://localhost:9090/students/insert",this.form).then(res =>{
+        if(res){
+          this.$message.success("新增成功")
+        }
+        else{
+          this.$message.error("新增失败")
+        }
+      })
+      this.load();     //刷新页面
     }
   }
 }
