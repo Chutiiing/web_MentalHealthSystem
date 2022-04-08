@@ -3,21 +3,21 @@
     <el-container style="height: 100%">
       <!-- 侧边栏 -->
       <el-aside :width="sideWidth + 'px'" 
-                style="background-color: rgb(238, 241, 246); height:100%;overflow-x:hidden;box-shadow:2px 0 6px rgb(0 21 41/35%);">
+                style="background-color: #f4f4f5; height:100%;overflow-x:hidden;box-shadow:2px 0 6px rgb(0 21 41/35%);">
         <el-menu  :default-openeds="['1','2', '3']" 
                   style="height:100%; overflow-x:hidden" 
-                  background-color="#8797A6" 
-                  text-color="#fff"
+                  background-color="#f4f4f5" 
+                  text-color="#000"
                   :collapse-transition="false"     
                   :collapse="isCollapse">
           <div style="height:60px; line-height:60px; text-align:center">
             <img src="../assets/sign.png" alt="" style="width:50px; position:relative; top:15px;"/>
-            <b style="color:#fff" v-show="logoTextshow">后台管理系统</b>
+            <b style="color:#000" v-show="logoTextshow">后台管理系统</b>
           </div>
 
           <el-submenu index="1">
             <template slot="title">
-              <i class="el-icon-s-custom" style="color:#fff"></i>
+              <i class="el-icon-s-custom" style="color:#000"></i>
               <span>学生信息管理</span>
             </template>
             <el-menu-item index="1-1">选项1</el-menu-item>
@@ -26,7 +26,7 @@
 
           <el-submenu index="2">
             <template slot="title">
-              <i class="el-icon-s-data" style="color:#fff"></i>
+              <i class="el-icon-s-data" style="color:#000"></i>
               <span>数据统计</span>
             </template>
             <el-menu-item index="2-1">选项1</el-menu-item>
@@ -35,7 +35,7 @@
 
           <el-submenu index="3">
             <template slot="title">
-              <i class="el-icon-setting" style="color:#fff"></i>
+              <i class="el-icon-setting" style="color:#000"></i>
               <span>设置</span>
             </template>
             <el-menu-item index="3-1">选项1</el-menu-item>
