@@ -8,7 +8,12 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('../views/HomeView.vue'),
+    redirect:"/student",            //重定向到"/student"
+    children:[
+      {path: 'student',name: 'student',component: () => import('../views/Student.vue')},   //学生管理
+      {path: 'analysis',name: 'analysis',component: () => import('../views/Analysis.vue')}  //数据统计    
+    ]
   },
   {
     path: '/about',
