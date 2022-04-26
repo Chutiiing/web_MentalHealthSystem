@@ -5,7 +5,7 @@
             <span :class="collapseBtnClass" style="cursor: pointer; font-size: 20px" @click="collapse"></span>
         </div>
         <el-dropdown style="width: 100px; cursor: pointer">
-            <span>王小虎</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
+            <span>admin</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
             <el-dropdown-menu slot="dropdown" style="width: 100px; text-align: center">
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">个人中心</el-dropdown-item>
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">

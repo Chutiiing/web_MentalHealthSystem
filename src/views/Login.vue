@@ -1,11 +1,11 @@
 <template>
   <div class="wrapper">
     <!-- 欢迎文字 -->
-    <div style="margin-left:200px; margin-top:100px">
-        <h1><i class="el-icon-sunny" style="margin-right:5px; size:medium"></i>欢迎来到心理健康管理系统</h1>
+    <div style="margin-left:200px; margin-top:100px;">
+        <h1>欢迎来到心理健康管理系统</h1>
     </div>
     <!-- 登录框 -->
-    <div style="margin: 100px auto; background-color: #f5f7fa; width: 350px; height: 300px; padding: 20px; border-radius: 10px; border: medium solid rgb(228,231,237)">
+    <div style="margin: 100px auto; background-color: #fff; width: 350px; height: 300px; padding: 20px; border-radius: 10px; border: medium solid rgb(228,231,237)">
       <div style="margin: 20px 0; text-align: center; font-size: 24px"><b>登 录</b></div>
       <el-form :model="user" :rules="rules" ref="userForm">
         <el-form-item prop="username">
@@ -37,7 +37,7 @@ export default {
             },
             rules: {
                 username: [
-                    { required: true, message: '请输入用户名', trigger: 'blur' },
+                    { required: true, message: '请输入工号', trigger: 'blur' },
                     { min: 3, max: 10, message: '长度在 3 到10个字符', trigger: 'blur' }
                 ],
                 password: [
@@ -55,7 +55,7 @@ export default {
         login(){
             this.$refs['userForm'].validate((valid) => {
                 if (valid) {  // 表单校验合法则跳转
-                    this.request.post("/teacher/login", this.user).then(res => {
+                    request.post("/teacher/login", this.user).then(res => {
                     if(!res) {
                         this.$message.error("用户名或密码错误")
                     } else {
@@ -76,7 +76,7 @@ export default {
 .wrapper {
     height: 100vh;
     overflow: hidden;
-    background-image: url('~@/assets/login.png');
+    background-image: url('~@/assets/login1.png');
     background-size: cover;
 }
 </style>

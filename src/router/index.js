@@ -12,7 +12,9 @@ const routes = [
     redirect:"/student",            //重定向到"/student"
     children:[
       {path: 'student',name: 'student',component: () => import('../views/Student.vue')},   //学生管理
-      {path: 'analysis',name: 'analysis',component: () => import('../views/Analysis.vue')}  //数据统计    
+      {path: 'analysis',name: 'analysis',component: () => import('../views/Analysis.vue')},  //数据统计
+      {path: 'TestTable',name: 'TestTable',component: () => import('../views/TestTable.vue')},  //数据统计
+      {path: 'booking',name: 'booking',component: () => import('../views/Booking.vue')}  //数据统计    
     ]
   },
   {

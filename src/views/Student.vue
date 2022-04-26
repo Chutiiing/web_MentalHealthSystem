@@ -16,13 +16,18 @@
                 v-model="name"
                 clearable>
     </el-input>
-    <el-input style="width:200px; margin-right:5px;" 
-                placeholder="按专业搜索"
-                prefix-icon="el-icon-tickets"
-                size="medium"
-                v-model="major"
-                clearable>
-    </el-input>
+    <el-select v-model="academy" 
+                placeholder="按学院搜索"
+                style="width:200px; margin-right:5px;"
+                prefix-icon="el-icon-collection-tag"
+                size="medium">
+        <el-option
+        v-for="item in optionacademy"
+        :key="item.academy"
+        :label="item.label"
+        :value="item.academy">
+        </el-option>
+    </el-select>
     <el-select v-model="grade" 
                 placeholder="按年级搜索"
                 style="width:200px; margin-right:5px;"
@@ -115,12 +120,13 @@
     <el-pagination
         @current-change="handleCurrentChange"
         :current-page="pageNum"
-        :page-size="4"
+        :page-size="10"
         layout="prev, pager, next, jumper"
         :total="total">
     </el-pagination>
     </div>
 
+    <!-- 弹窗 -->
     <el-dialog title="学生信息" :visible.sync="dialogFormVisible" width="30%">
         <el-form :model="form" label-width="100px" size="small">
             <el-form-item label="学号">
@@ -136,7 +142,13 @@
             </el-select>
             </el-form-item>
             <el-form-item label="学院">
-            <el-input v-model="form.academy" autocomplete="off"></el-input>
+            <el-select v-model="form.academy" placeholder="请选择学院" >
+                <el-option label="计算机与大数据学院" value="计算机与大数据学院"></el-option>
+                <el-option label="物理与信息工程学院" value="物理与信息工程学院"></el-option>
+                <el-option label="土木工程学院" value="土木工程学院"></el-option>
+                <el-option label="数学与统计学院" value="数学与统计学院"></el-option>
+                <el-option label="外国语学院" value="外国语学院"></el-option>
+            </el-select>
             </el-form-item>
             <el-form-item label="专业">
             <el-input v-model="form.major" autocomplete="off"></el-input>
@@ -174,11 +186,29 @@ export default {
             tableData: [],
             total:0,          //展示的数据总书
             pageNum:1,        //默认在哪一页
-            pageSize:4,       //默认的页面中项目数
+            pageSize:10,       //默认的页面中项目数
             sno:"",               //搜索的学号默认是空
             name:"",               //搜索的姓名默认是空
-            major:"",               
-            //搜索的专业默认是空
+            optionacademy: [{
+                academy: '',
+                label: '所有学院'
+            }, {
+                academy: '计算机与大数据学院',
+                label: '计算机与大数据学院'
+            },{
+                academy: '物理与信息工程学院',
+                label: '物理与信息工程学院'
+            },{
+                academy: '土木工程学院',
+                label: '土木工程学院'
+            },{
+                academy: '数学与统计学院',
+                label: '数学与统计学院'
+            },{
+                academy: '外国语学院',
+                label: '外国语学院'
+            }],
+            academy:"",               //搜索的学院默认是空
             optiongrade: [{
                 grade: '',
                 label: '所有年级'
@@ -195,8 +225,7 @@ export default {
                 grade: '21',
                 label: '21'
             }],
-            grade:"",               
-            //搜索的年级默认是空
+            grade:"",                //搜索的年级默认是空
             optionstate: [{
                 state: '',
                 label: '全部状态'
@@ -210,7 +239,7 @@ export default {
             state:"",               //搜索的心理状态默认是空
             dialogFormVisible:false,   //对话框弹窗
             form:{
-            password: "123456"
+                password: "123456"    //默认密码
             },
             flag:true,       //默认是新增
             snoInput:false,     //学号的文本框默认是可以输入
@@ -228,17 +257,17 @@ export default {
             request.get("/students/page",{
             params:{
                 pageNum: this.pageNum,
-                pageSize: 4,
+                pageSize: 10,
                 sno: this.sno,
                 name: this.name,
-                major: this.major,
+                academy:this.academy,
                 grade: this.grade,
                 state: this.state
             }
             }).then(res =>{
-            console.log(res);
-            this.tableData = res.data;
-            this.total = res.total;
+                console.log(res);
+                this.tableData = res.data;
+                this.total = res.total;
             })
         },
         //页面跳转相应（每页的总个数写定）
@@ -251,7 +280,7 @@ export default {
         reset(){
             this.sno = "";
             this.name = "";
-            this.major = "";
+            this.academy = "";
             this.grade = "";
             this.state = "";
             this.load();
@@ -259,14 +288,14 @@ export default {
         //新增用户数据
         handleAdd(){
             this.form = {};     //form对象置空
-            this.flag = true;
+            this.flag = true;         //表示是新增
             this.snoInput = false;   //可输入学号
             this.dialogFormVisible = true;   //显示弹窗
         },
         //编辑用户信息
         handleEdit(row){
             this.form = row;
-            this.flag = false;
+            this.flag = false;       //表示是编辑
             this.snoInput = true;    //学号不可修改
             this.dialogFormVisible = true;
         },

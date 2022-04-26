@@ -14,18 +14,23 @@
         </div>
 
         <el-menu-item index="/">
-            <i class="el-icon-s-custom" style="color:#000"></i>
+            <i class="el-icon-user" style="color:#000"></i>
             <span>学生信息管理</span>
         </el-menu-item>
 
         <el-menu-item index="/analysis">
-            <i class="el-icon-s-data" style="color:#000"></i>
+            <i class="el-icon-pie-chart" style="color:#000"></i>
             <span>数据统计</span>
         </el-menu-item>
 
-        <el-menu-item index="/">
-            <i class="el-icon-setting" style="color:#000"></i>
-            <span>设置</span>
+        <el-menu-item index="/TestTable">
+            <i class="el-icon-document" style="color:#000"></i>
+            <span>测评量表管理</span>
+        </el-menu-item>
+
+        <el-menu-item index="/booking">
+            <i class="el-icon-chat-dot-square" style="color:#000"></i>
+            <span>咨询室预约管理</span>
         </el-menu-item>
         
     </el-menu>
