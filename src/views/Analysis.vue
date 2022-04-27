@@ -5,25 +5,25 @@
           <el-col :span="6">
             <el-card>
                 <div><i class="el-icon-user" style="margin-right:5px" />全校学生总人数</div>
-                <div style="padding:10px 0; text-align:center; font-weight:bold;">{{this.total}}</div>
+                <div style="padding:10px 0; text-align:center; font-size:20px; font-weight:bold;">{{this.total}}</div>
             </el-card>
         </el-col>
         <el-col :span="6">
             <el-card>
                 <div><i class="el-icon-check" style="margin-right:5px" />良好人数</div>
-                <div style="padding:10px 0; text-align:center; font-weight:bold;">{{this.total-this.danger}}</div>
+                <div style="padding:10px 0; text-align:center; font-size:20px; font-weight:bold;">{{this.total-this.danger}}</div>
             </el-card>
         </el-col>
         <el-col :span="6">
             <el-card>
                 <div><i class="el-icon-warning-outline" style="margin-right:5px" />潜在风险人数</div>
-                <div style="padding:10px 0; text-align:center; font-weight:bold;">{{this.danger}}</div>
+                <div style="padding:10px 0; text-align:center; font-size:20px; font-weight:bold;">{{this.danger}}</div>
             </el-card>
         </el-col>
         <el-col :span="6">
             <el-card>
                 <div><i class="el-icon-bell" style="margin-right:5px" />高风险学院</div>
-                <div style="padding:10px 0; text-align:center; font-weight:bold;">{{this.academyTop}}</div>
+                <div style="padding:10px 0; text-align:center;  font-size:20px;font-weight:bold;">{{this.academyTop}}</div>
             </el-card>
         </el-col>
       </el-row>
@@ -102,14 +102,14 @@ export default {
                     name: "总人数",
                     data: [],        //总人数
                     type: 'bar',
-                    color: '#628ada'
+                    color: '#95a1b9'
                     
                 },
                 {
                     name: "存在风险人数",
                     data: [],           //潜在风险的人数
                     type: 'bar',
-                    color :'#c16262'
+                    color :'#bd867d'
                 }
             ]
             };
@@ -142,10 +142,10 @@ export default {
                 series: [
                     {
                         type: 'pie',
-                        radius: '70%',
+                        radius:  ['40%', '70%'],
                         color: [
-                            '#628ada',
-                            '#c16262'
+                            '#95a1b9',
+                            '#bd867d'
                         ],
                         label:{            //饼图图形上的文本标签
                             normal:{

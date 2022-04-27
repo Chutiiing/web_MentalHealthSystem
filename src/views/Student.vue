@@ -2,170 +2,170 @@
   <div>
     <!-- 表格搜索框 -->
     <div style="margin:10px 0; text-align:left">
-    <el-input style="width:200px; margin-right:5px;" 
-                placeholder="按学号搜索"
-                prefix-icon="el-icon-star-off"
-                size="medium"
-                v-model="sno"
-                clearable>
-    </el-input>
-    <el-input style="width:200px; margin-right:5px;" 
-                placeholder="按姓名搜索"
-                prefix-icon="el-icon-user"
-                size="medium"
-                v-model="name"
-                clearable>
-    </el-input>
-    <el-select v-model="academy" 
-                placeholder="按学院搜索"
-                style="width:200px; margin-right:5px;"
-                prefix-icon="el-icon-collection-tag"
-                size="medium">
-        <el-option
-        v-for="item in optionacademy"
-        :key="item.academy"
-        :label="item.label"
-        :value="item.academy">
-        </el-option>
-    </el-select>
-    <el-select v-model="grade" 
-                placeholder="按年级搜索"
-                style="width:200px; margin-right:5px;"
-                prefix-icon="el-icon-collection-tag"
-                size="medium">
-        <el-option
-        v-for="item in optiongrade"
-        :key="item.grade"
-        :label="item.label"
-        :value="item.grade">
-        </el-option>
-    </el-select>
-    <el-select v-model="state" 
-                placeholder="按心理状态搜索"
-                style="width:200px; margin-right:5px;"
-                prefix-icon="el-icon-sunny"
-                size="medium">
-        <el-option
-        v-for="item in optionstate"
-        :key="item.state"
-        :label="item.label"
-        :value="item.state">
-        </el-option>
-    </el-select>
-    <el-button style="margin-left:5px;" 
-                type="primary" 
-                plain size="medium" 
-                icon="el-icon-search" 
-                @click="load">搜索</el-button>
-    <el-button style="margin-left:5px;" 
-                type="warning" 
-                plain size="medium" 
-                icon="el-icon-refresh-left" 
-                @click="reset">重置</el-button>
+        <el-input style="width:200px; margin-right:5px;" 
+                    placeholder="按学号搜索"
+                    prefix-icon="el-icon-star-off"
+                    size="medium"
+                    v-model="sno"
+                    clearable>
+        </el-input>
+        <el-input style="width:200px; margin-right:5px;" 
+                    placeholder="按姓名搜索"
+                    prefix-icon="el-icon-user"
+                    size="medium"
+                    v-model="name"
+                    clearable>
+        </el-input>
+        <el-select v-model="academy" 
+                    placeholder="按学院搜索"
+                    style="width:200px; margin-right:5px;"
+                    prefix-icon="el-icon-collection-tag"
+                    size="medium">
+            <el-option
+                v-for="item in optionacademy"
+                :key="item.academy"
+                :label="item.label"
+                :value="item.academy">
+            </el-option>
+        </el-select>
+        <el-select v-model="grade" 
+                    placeholder="按年级搜索"
+                    style="width:200px; margin-right:5px;"
+                    prefix-icon="el-icon-collection-tag"
+                    size="medium">
+            <el-option
+                v-for="item in optiongrade"
+                :key="item.grade"
+                :label="item.label"
+                :value="item.grade">
+            </el-option>
+        </el-select>
+        <el-select v-model="state" 
+                    placeholder="按心理状态搜索"
+                    style="width:200px; margin-right:5px;"
+                    prefix-icon="el-icon-sunny"
+                    size="medium">
+            <el-option
+                v-for="item in optionstate"
+                :key="item.state"
+                :label="item.label"
+                :value="item.state">
+            </el-option>
+        </el-select>
+        <el-button style="margin-left:5px;" 
+                    type="primary" 
+                    plain size="medium" 
+                    icon="el-icon-search" 
+                    @click="load">搜索</el-button>
+        <el-button style="margin-left:5px;" 
+                    type="warning" 
+                    plain size="medium" 
+                    icon="el-icon-refresh-left" 
+                    @click="reset">重置</el-button>
     </div>
 
     <div style="margin:20px 0;text-align:left;">
-    <el-button type="primary" @click="handleAdd"><i class="el-icon-circle-plus-outline" style="margin-right:5px;"></i>新增</el-button>
-    <template>
-        <el-popconfirm
-        title="确定删除这些记录吗？"
-        @confirm = "delBatch"
-        style="margin-left:10px"
-        >
-        <el-button slot="reference" type="danger"><i class="el-icon-delete" style="margin-right:5px;"></i>批量删除</el-button> 
-        </el-popconfirm>
-    </template>
+        <el-button type="primary" @click="handleAdd"><i class="el-icon-circle-plus-outline" style="margin-right:5px;"></i>新增</el-button>
+        <template>
+            <el-popconfirm
+                title="确定删除这些记录吗？"
+                @confirm = "delBatch"
+                style="margin-left:10px"
+            >
+            <el-button slot="reference" type="danger"><i class="el-icon-delete" style="margin-right:5px;"></i>批量删除</el-button> 
+            </el-popconfirm>
+        </template>
     </div>
 
     <el-table :data="tableData" border stripe :header-cell-style="{background:'rgb(214 216 221)'}" @selection-change="handleSelectionChange">
-    <!-- 表格内容 -->
-    <el-table-column
-        type="selection"
-        width="50">
-    </el-table-column>
-    <el-table-column prop="sno" label="学号" width="130">
-    </el-table-column>
-    <el-table-column prop="name" label="姓名" width="130">
-    </el-table-column>
-    <el-table-column prop="sex" label="性别" width="130">
-    </el-table-column>
-    <el-table-column prop="academy" label="学院" width="200">
-    </el-table-column>
-    <el-table-column prop="major" label="专业" width="150">
-    </el-table-column>
-    <el-table-column prop="grade" label="年级" width="150">
-    </el-table-column>
-    <el-table-column prop="state" label="心理状态" width="160">
-    </el-table-column>
-    <el-table-column label="操作">
-        <template slot-scope="scope">
-        <el-button type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.row)"></el-button>
-        <el-button type="warning" icon="el-icon-star-off" circle></el-button>
-        <!-- 删除确认 -->
-        <template>
-            <el-popconfirm
-            title="确定删除这一条记录吗？"
-            @confirm = "handleDel(scope.row.sno)"
-            style="margin-left:10px"
-            >
-            <el-button slot="reference" type="danger" icon="el-icon-delete" circle></el-button> 
-            </el-popconfirm>
-        </template>
-        </template>
+        <!-- 表格内容 -->
+        <el-table-column
+            type="selection"
+            width="50">
+        </el-table-column>
+        <el-table-column prop="sno" label="学号" width="130">
+        </el-table-column>
+        <el-table-column prop="name" label="姓名" width="130">
+        </el-table-column>
+        <el-table-column prop="sex" label="性别" width="130">
+        </el-table-column>
+        <el-table-column prop="academy" label="学院" width="200">
+        </el-table-column>
+        <el-table-column prop="major" label="专业" width="150">
+        </el-table-column>
+        <el-table-column prop="grade" label="年级" width="150">
+        </el-table-column>
+        <el-table-column prop="state" label="心理状态" width="160">
+        </el-table-column>
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.row)"></el-button>
+                <el-button type="warning" icon="el-icon-star-off" circle></el-button>
+                <!-- 删除确认 -->
+                <template>
+                    <el-popconfirm
+                        title="确定删除这一条记录吗？"
+                        @confirm = "handleDel(scope.row.sno)"
+                        style="margin-left:10px"
+                        >
+                        <el-button slot="reference" type="danger" icon="el-icon-delete" circle></el-button> 
+                    </el-popconfirm>
+                </template>
+            </template>
     </el-table-column>
 
     </el-table>
     <!-- 分页功能 -->
     <div style="padding:10px 0; text-align:center;">
-    <el-pagination
-        @current-change="handleCurrentChange"
-        :current-page="pageNum"
-        :page-size="10"
-        layout="prev, pager, next, jumper"
-        :total="total">
-    </el-pagination>
+        <el-pagination
+            @current-change="handleCurrentChange"
+            :current-page="pageNum"
+            :page-size="10"
+            layout="prev, pager, next, jumper"
+            :total="total">
+        </el-pagination>
     </div>
 
     <!-- 弹窗 -->
     <el-dialog title="学生信息" :visible.sync="dialogFormVisible" width="30%">
         <el-form :model="form" label-width="100px" size="small">
             <el-form-item label="学号">
-            <el-input v-model="form.sno" autocomplete="off" :disabled="snoInput"></el-input>
+                <el-input v-model="form.sno" autocomplete="off" :disabled="snoInput"></el-input>
             </el-form-item>
             <el-form-item label="姓名">
-            <el-input v-model="form.name" autocomplete="off"></el-input>
+                <el-input v-model="form.name" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="性别">
-            <el-select v-model="form.sex" placeholder="请选择性别">
-                <el-option label="女" value="女"></el-option>
-                <el-option label="男" value="男"></el-option>
-            </el-select>
+                <el-select v-model="form.sex" placeholder="请选择性别">
+                    <el-option label="女" value="女"></el-option>
+                    <el-option label="男" value="男"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="学院">
-            <el-select v-model="form.academy" placeholder="请选择学院" >
-                <el-option label="计算机与大数据学院" value="计算机与大数据学院"></el-option>
-                <el-option label="物理与信息工程学院" value="物理与信息工程学院"></el-option>
-                <el-option label="土木工程学院" value="土木工程学院"></el-option>
-                <el-option label="数学与统计学院" value="数学与统计学院"></el-option>
-                <el-option label="外国语学院" value="外国语学院"></el-option>
-            </el-select>
+                <el-select v-model="form.academy" placeholder="请选择学院" >
+                    <el-option label="计算机与大数据学院" value="计算机与大数据学院"></el-option>
+                    <el-option label="物理与信息工程学院" value="物理与信息工程学院"></el-option>
+                    <el-option label="土木工程学院" value="土木工程学院"></el-option>
+                    <el-option label="数学与统计学院" value="数学与统计学院"></el-option>
+                    <el-option label="外国语学院" value="外国语学院"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="专业">
-            <el-input v-model="form.major" autocomplete="off"></el-input>
+                <el-input v-model="form.major" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="年级">
-            <el-select v-model="form.grade" placeholder="请选择年级" >
-                <el-option label="18" value="18"></el-option>
-                <el-option label="19" value="19"></el-option>
-                <el-option label="20" value="20"></el-option>
-                <el-option label="21" value="21"></el-option>
-            </el-select>
+                <el-select v-model="form.grade" placeholder="请选择年级" >
+                    <el-option label="18" value="18"></el-option>
+                    <el-option label="19" value="19"></el-option>
+                    <el-option label="20" value="20"></el-option>
+                    <el-option label="21" value="21"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="心理状态">
-            <el-select v-model="form.state" placeholder="请选择心理状态">
-                <el-option label="良好" value="良好"></el-option>
-                <el-option label="危险" value="危险"></el-option>
-            </el-select>
+                <el-select v-model="form.state" placeholder="请选择心理状态">
+                    <el-option label="良好" value="良好"></el-option>
+                    <el-option label="危险" value="危险"></el-option>
+                </el-select>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">

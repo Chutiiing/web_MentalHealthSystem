@@ -6,7 +6,7 @@
                   text-color="#000"
                   :collapse-transition="false"     
                   :collapse="isCollapse"
-                  active-text-color="#005bbb"
+                  active-text-color="#000"
                   router>
         <div style="height:60px; line-height:60px; text-align:center">
             <img src="../assets/sign.png" alt="" style="width:50px; position:relative; top:15px;"/>
