@@ -102,14 +102,14 @@ export default {
                     name: "总人数",
                     data: [],        //总人数
                     type: 'bar',
-                    color: '#95a1b9'
+                    color: '#8caae7'
                     
                 },
                 {
                     name: "存在风险人数",
                     data: [],           //潜在风险的人数
                     type: 'bar',
-                    color :'#bd867d'
+                    color :'#e68888'
                 }
             ]
             };
@@ -144,8 +144,8 @@ export default {
                         type: 'pie',
                         radius:  ['40%', '70%'],
                         color: [
-                            '#95a1b9',
-                            '#bd867d'
+                            '#8caae7',
+                            '#e68888'
                         ],
                         label:{            //饼图图形上的文本标签
                             normal:{
