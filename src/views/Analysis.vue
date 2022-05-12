@@ -113,6 +113,7 @@ export default {
                 }
             ]
             };
+            
             //请求查询各个学院的人数
             request.get("/students/academy").then(res =>{
                 this.academyTop = res.y[0];      //取出最危险学院赋值

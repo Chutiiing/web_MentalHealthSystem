@@ -5,11 +5,11 @@
             <span :class="collapseBtnClass" style="cursor: pointer; font-size: 20px" @click="collapse"></span>
         </div>
         <el-dropdown style="width: 100px; cursor: pointer">
-            <span>admin</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
+            <span>{{user}}</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
             <el-dropdown-menu slot="dropdown" style="width: 100px; text-align: center">
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">个人中心</el-dropdown-item>
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">
-                    <router-link to="/login" style="text-decoration:none">退出</router-link>
+                    <span style="text-decoration:none" @click="loginOut">退出</span>
                 </el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
@@ -23,9 +23,20 @@ export default {
     props:{
         collapseBtnClass:String,
     },
+    data() {
+        return {
+            user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : ""
+        }
+    },
     methods: {
         collapse() {
             this.$emit("asideCollapse")
+        },
+        //退出登录
+        loginOut() {
+            this.$router.push("/login")
+            localStorage.removeItem("user")
+            this.$message.success("退出成功")
         }
     }
 }

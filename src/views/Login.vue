@@ -59,6 +59,8 @@ export default {
                     if(!res) {
                         this.$message.error("用户名或密码错误")
                     } else {
+                        //存储用户信息到浏览器
+                        localStorage.setItem("user",JSON.stringify(this.user.username))   
                         this.$router.push("/")
                     }
                     })
