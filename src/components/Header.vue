@@ -5,7 +5,7 @@
             <span :class="collapseBtnClass" style="cursor: pointer; font-size: 20px" @click="collapse"></span>
         </div>
         <el-dropdown style="width: 100px; cursor: pointer">
-            <span>{{user}}</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
+            <span>{{username}}</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
             <el-dropdown-menu slot="dropdown" style="width: 100px; text-align: center">
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">个人中心</el-dropdown-item>
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">
@@ -18,6 +18,8 @@
 
 <script>
 
+import request from '@/utils/request'
+
 export default {
     name:"Header",
     props:{
@@ -25,13 +27,20 @@ export default {
     },
     data() {
         return {
-            user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : ""
+            user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
+            username:"?"
         }
+    },
+    created(){
+        request.get("teacher/search/"+this.user).then(res =>{
+            this.username = res.username
+        })
     },
     methods: {
         collapse() {
             this.$emit("asideCollapse")
         },
+        
         //退出登录
         loginOut() {
             this.$router.push("/login")

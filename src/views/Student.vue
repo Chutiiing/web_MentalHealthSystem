@@ -331,9 +331,9 @@ export default {
         //删除
         handleDel(sno){
             request.delete("/students/del/"+sno).then(res =>{
-            if(res){
-                this.$message.success("删除成功")
-                this.load();     //刷新页面
+                if(res){
+                    this.$message.success("删除成功")
+                    this.load();     //刷新页面
                 }
                 else{
                 this.$message.error("删除失败")
