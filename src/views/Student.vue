@@ -79,24 +79,14 @@
 
     <el-table :data="tableData" border stripe :header-cell-style="{background:'rgb(214 216 221)'}" @selection-change="handleSelectionChange">
         <!-- 表格内容 -->
-        <el-table-column
-            type="selection"
-            width="50">
-        </el-table-column>
-        <el-table-column prop="sno" label="学号" width="130">
-        </el-table-column>
-        <el-table-column prop="name" label="姓名" width="130">
-        </el-table-column>
-        <el-table-column prop="sex" label="性别" width="130">
-        </el-table-column>
-        <el-table-column prop="academy" label="学院" width="200">
-        </el-table-column>
-        <el-table-column prop="major" label="专业" width="150">
-        </el-table-column>
-        <el-table-column prop="grade" label="年级" width="150">
-        </el-table-column>
-        <el-table-column prop="state" label="心理状态" width="160">
-        </el-table-column>
+        <el-table-column type="selection" width="50"></el-table-column>
+        <el-table-column prop="sno" label="学号" width="130"></el-table-column>
+        <el-table-column prop="name" label="姓名" width="130"></el-table-column>
+        <el-table-column prop="sex" label="性别" width="130"></el-table-column>
+        <el-table-column prop="academy" label="学院" width="200"></el-table-column>
+        <el-table-column prop="major" label="专业" width="150"></el-table-column>
+        <el-table-column prop="grade" label="年级" width="150"></el-table-column>
+        <el-table-column prop="state" label="心理状态" width="160"></el-table-column>
         <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.row)"></el-button>
@@ -184,7 +174,7 @@ export default {
     data() {
         return{
             tableData: [],
-            total:0,          //展示的数据总书
+            total:0,          //展示的数据总数
             pageNum:1,        //默认在哪一页
             pageSize:10,       //默认的页面中项目数
             sno:"",               //搜索的学号默认是空

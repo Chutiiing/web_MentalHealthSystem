@@ -16,13 +16,13 @@
                                 type="primary" 
                                 plain size="medium" 
                                 icon="el-icon-search"
-                                >搜索</el-button>
+                                @click="search">搜索</el-button>
                 </div>
-                <!-- 预约信息列表 -->
+                <!-- 量表信息列表 -->
                 <el-row :gutter="10">
                     <el-col :span="12" 
                             v-for="item in Tables"
-                            :key="item.id" 
+                            :key="item.tableid" 
                             style="margin-top:30px;">
                         <el-card style="width:100%; ">
                             <div style="margin-bottom:10px">
@@ -34,11 +34,11 @@
                                             -webkit-line-clamp:2;
                                             overflow: hidden;
                                             white-space:pre-wrap;
-                                            height:42px;">简介：{{item.abstract}}</div>
+                                            height:42px;">简介：{{item.introduction}}</div>
                                 <div style="margin-bottom:15px; font-size:13px; color:#938a8a"><i class="el-icon-user-solid"/>  发布人：{{item.admin}}</div>
-                                <div style="margin-bottom:15px; font-size:13px; color:#938a8a" ><i class="el-icon-date"/>  发布时间：{{item.date}}</div>
-                                <el-button size="medium" type="primary" plain>查看量表详情</el-button>
-                                <el-button style="margin-left:20px" size="medium" type="danger" plain>删除量表</el-button>
+                                <div style="margin-bottom:15px; font-size:13px; color:#938a8a" ><i class="el-icon-date"/>  发布时间：{{item.time}}</div>
+                                <el-button size="medium" type="primary" plain @click="detail(item)">查看量表详情</el-button>
+                                <el-button style="margin-left:20px" size="medium" type="danger" plain @click="del(item.tableid)">删除量表</el-button>
                             </div>
                         </el-card>
                     </el-col>
@@ -46,15 +46,26 @@
                 <!-- 分页 -->
                 <div style="padding:10px 0; text-align:center; margin-top:20px">
                     <el-pagination
-                        
-                        :current-page="1"
+                        @current-change="handleCurrentChange"
+                        :current-page="pageNum"
                         :page-size="4"
                         layout="prev, pager, next, jumper"
-                        :total="4">
+                        :total="total">
                     </el-pagination>
                 </div>
             </el-card>
         </el-col>
+
+         <!-- 弹窗 -->
+        <el-dialog v-model="tableItem" title="量表详情" :visible.sync="dialogFormVisible" width="30%">
+            <div style="margin-bottom:15px"><b>{{tableItem.title}}</b></div>
+            <div style="margin-bottom:15px;">简介：{{tableItem.introduction}}</div>
+            <div style="margin-bottom:15px; font-size:13px; color:#938a8a"><i class="el-icon-user-solid"/>  发布人：{{tableItem.admin}}</div>
+            <div style="margin-bottom:15px; font-size:13px; color:#938a8a" ><i class="el-icon-date"/>  发布时间：{{tableItem.time}}</div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">关 闭</el-button>
+            </div>
+        </el-dialog>
 
         <el-col :span="8" style="margin-top:10px;">
              <!-- 导入文件 -->
@@ -100,7 +111,7 @@
                         <el-button style="margin-left:5px;" 
                                     type="primary" 
                                     plain size="small" 
-                                    icon="el-icon-search">搜索</el-button>
+                                    icon="el-icon-search" @click="pieSearch">搜索</el-button>
                     </div>
                 </el-card>
             </el-row>
@@ -111,36 +122,19 @@
 <script>
 
 import * as echarts from 'echarts';
+import request from '@/utils/request'
 
 export default {
     data() {
       return {
         title:'',    //搜索框数据
-        Tables:[{       //量表信息
-            id:'1',
-            title:'心理压力测评表',
-            abstract:'在现代社会中，由于竞争日趋激烈，生活节奏加快，各种应急事件增多，人们的心理压力不断加大，容易产生各种负性情绪，成为影响人们生活质量的重要因素。那么，我们能否自我测试所受的心理压力，预防和减轻身心损害呢？',
-            admin:'admin',
-            date:'2022-04-26 17:00:00'
-        },{
-            id:'2',
-            title:'Sarason考试焦虑量表(TAS)',
-            abstract:'此量表用于测定初中以上学生在考试期间的焦虑水平。下列37个句子是描述人们对参加考试的感受。',
-            admin:'admin',
-            date:'2022-04-26 17:00:00'
-        },{
-            id:'3',
-            title:'焦虑自评量表 (SAS)',
-            abstract:'焦虑自评量表(Self-Rating Anxiety Scale SAS)由华裔教授Zung编制（1971）。从量表构造的形式到具体评定的方法，都与抑郁自评量表(SDS)十分相似，是一种分析病人主观症状的相当简便的临床工具。由于焦虑是心理咨询门诊中较常见的一种情绪障碍，所以近年来SAS是咨询门诊中了解焦虑症状的常用量表。',
-            admin:'admin',
-            date:'2022-04-26 17:00:00'
-        },{
-            id:'4',
-            title:'人际信任量表',
-            abstract:'本量表用于测试受试者对他人行为、承诺或陈述之可靠性的估计。共25个项目，其内容涉及各种处境下的人际信任，涉及不同社会角色。多数项目于社会角色的可信赖信有关，但有些项目与对未来的社会的乐观程度有关。',
-            admin:'admin',
-            date:'2022-04-26 17:00:00'
-        }],
+        Tables:[],     //所有的表
+        tableItem:{},  //某一个表
+        total:0,          //展示的数据总数
+        pageNum:1,        //默认在哪一页
+        pageSize:4,       //默认的页面中项目数
+        dialogFormVisible:false,   //对话框弹窗
+
         titleOption:'心理压力测评表',     //图表显示的量表搜索框默认为空
         optionTable:[{
             titleOption:'心理压力测评表',
@@ -155,84 +149,141 @@ export default {
             titleOption:'人际信任量表',
             label:'人际信任量表'
         }],
+
         fileList: [
             {name: '焦虑自评量表 (SAS).xlsx', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
             {name: '人际信任量表.xlsx', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
         ]
       };
     },
-    methods: {
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
-      handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件`);
-      },
-      beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
-      }
+    created(){
+        this.load()
     },
     mounted() {
-        //显示
-        var chartDom = document.getElementById('pie');
-        var myChart = echarts.init(chartDom);
-        var option;
-
-        option = {
-            tooltip: {
-                trigger: 'item'
-            },
-            title: {
-                text: '量表填写情况',
-            },
-            legend: {
-                top: '15%',
-                left: 'center'
-            },
-            series: [
-                {
-                    type: 'pie',
-                    radius: ['40%', '60%'],
-                    center: ['50%','60%'],
-                    avoidLabelOverlap: false,
-                    label: {
-                        show: false,
-                        position: 'center'
-                },
-                label:{            //饼图图形上的文本标签
-                    normal:{
-                        show:true,
-                        position:'inner', //标签的位置
-                        textStyle : {
-                            fontWeight : 300 ,
-                            fontSize : 10,    //文字的字体大小
-                            color: "#000"
-                        },
-                        formatter:'{d}%'
-                    }
-                },
-                color: [
-                            '#8caae7',
-                            '#bdd7f4'
-                        ],
-                labelLine: {
-                    show: false
-                },
-                data: [
-                    { value: 18, name: '已填写人数'},
-                    { value: 5, name: '未填写人数' },
-                ]
+        this.pieShow()
+    },
+    methods: {
+        load(){
+            request.get("/test/page",{
+                params:{
+                    pageNum: this.pageNum,
+                    pageSize: 4,
+                    title:this.title
                 }
-            ]
-        };
+                }).then(res =>{
+                    console.log(res);
+                    this.Tables = res.data;
+                    this.total = res.total;
+                })
+        },
+        //页面跳转相应（每页的总个数写定）
+        handleCurrentChange(pageNum){
+            console.log(pageNum)
+            this.pageNum = pageNum
+            this.load()
+        },
+        //量表搜索
+        search() {
+            this.load();
+        },
+        //查看量表详情
+        detail(item) {
+            this.tableItem = item
+            this.dialogFormVisible = true;
+        },
+        //量表删除
+        del(id){
+            request.delete("/test/del/"+id).then(res =>{
+                if(res){
+                    this.$message.success("删除成功")
+                    this.pageNum = 1;   //回到第一页
+                    this.load();     //刷新页面
+                }
+                else{
+                this.$message.error("删除失败")
+                }
+            })
+        },
+        //饼图搜索
+        pieSearch(){
+            this.pieShow()
+        },
+        //渲染
+        pieShow(){
+            //显示
+            var chartDom = document.getElementById('pie');
+            var myChart = echarts.init(chartDom);
+            var option;
 
-        option && myChart.setOption(option);
+            option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                title: {
+                    text: '量表填写情况',
+                },
+                legend: {
+                    top: '15%',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: ['40%', '60%'],
+                        center: ['50%','60%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        label:{            //饼图图形上的文本标签
+                            normal:{
+                                show:true,
+                                position:'inner', //标签的位置
+                                textStyle : {
+                                    fontWeight : 300 ,
+                                    fontSize : 10,    //文字的字体大小
+                                    color: "#000"
+                                },
+                                formatter:'{d}%'
+                            }
+                        },
+                        color: [
+                                    '#8caae7',
+                                    '#bdd7f4'
+                                ],
+                        labelLine: {
+                            show: false
+                        },
+                        data: []
+                    }
+                ]
+            };
 
+            //返回填写人数和未填写人数
+            request.get("/testHistory/count/"+this.titleOption).then(res =>{
+                console.log(res.total)
+                console.log(res.finish)
+                option.series[0].data = [
+                    { value: res.finish, name: '已填写'},
+                    { value: res.total-res.finish, name: '未填写'},
+                ]
+                option && myChart.setOption(option);
+            })
+        },
+        handleRemove(file, fileList) {
+            console.log(file, fileList);
+        },
+        handlePreview(file) {
+            console.log(file);
+        },
+        handleExceed(files, fileList) {
+            this.$message.warning(`当前限制选择 3 个文件`);
+        },
+        beforeRemove(file, fileList) {
+            return this.$confirm(`确定移除 ${ file.name }？`);
+        }
     }
-
 }
 </script>
 
