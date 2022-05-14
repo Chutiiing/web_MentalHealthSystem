@@ -22,7 +22,8 @@
                     <el-button style="margin-left:5px;" 
                                 type="primary" 
                                 plain size="medium" 
-                                icon="el-icon-search">搜索</el-button>
+                                icon="el-icon-search"
+                                @click="search">搜索</el-button>
                 </div>
                 <!-- 预约信息列表 -->
                 <!-- 利用v-for中的key对元素进行定位 -->
@@ -34,11 +35,20 @@
                         <el-card style="width:100%; ">
                             <div style="margin-bottom:10px">
                                 <div style="margin-bottom:10px"><i class="el-icon-s-home"/>  咨询室：{{item.room}}</div>
-                                <div style="margin-bottom:10px"><i class="el-icon-date"/>  预约时间：{{item.date}}</div>
+                                <div style="margin-bottom:10px"><i class="el-icon-date"/>  预约时间：{{item.time}}</div>
                                 <div style="margin-bottom:10px"><i class="el-icon-check"/>  预约情况：{{item.isbooking}}</div>
-                                <div style="margin-bottom:10px"><i class="el-icon-user-solid"/>  预约人：{{item.name}}</div>
-                                <el-button size="medium" type="primary" plain>查看学生信息</el-button>
-                                <el-button style="margin-left:20px" size="medium" type="danger" plain>删除预约信息</el-button>
+                                <div style="margin-bottom:10px"><i class="el-icon-user-solid"/>  预约人：{{item.sno}}</div>
+                                <el-button size="medium" type="primary" plain @click="check(item.sno)">查看学生信息</el-button>
+                                <!-- 删除确认 -->
+                                <template>
+                                    <el-popconfirm
+                                        title="确定删除这条预约信息吗？"
+                                        @confirm = "del(item.id)"
+                                        style="margin-left:10px"
+                                        >
+                                        <el-button slot="reference" style="margin-left:20px" size="medium" type="danger" plain>删除预约信息</el-button>
+                                    </el-popconfirm>
+                                </template>
                             </div>
                         </el-card>
                     </el-col>
@@ -46,15 +56,30 @@
                 <!-- 分页 -->
                 <div style="padding:10px 0; text-align:center; margin-top:20px">
                     <el-pagination
-                        
-                        :current-page="1"
+                        @current-change="handleCurrentChange"
+                        :current-page="pageNum"
                         :page-size="4"
                         layout="prev, pager, next, jumper"
-                        :total="16">
+                        :total="total">
                     </el-pagination>
                 </div>
             </el-card>
         </el-col>
+
+        <!-- 弹窗 -->
+        <el-dialog v-model="student" title="预约学生信息" :visible.sync="dialogFormVisible" width="30%">
+            <div style="margin-bottom:15px;">  学    号：{{student.sno}}</div>
+            <div style="margin-bottom:15px;">  姓    名：{{student.name}}</div>
+            <div style="margin-bottom:15px;">  性    别：{{student.sex}}</div>
+            <div style="margin-bottom:15px;">  学    院：{{student.academy}}</div>
+            <div style="margin-bottom:15px;">  专    业：{{student.major}}</div>
+            <div style="margin-bottom:15px;">  年    级：{{student.grade}}</div>
+            <div style="margin-bottom:15px;">  心理状态：{{student.state}}</div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">关 闭</el-button>
+            </div>
+        </el-dialog>
+
         <el-col :span="8" style="margin-top:20px;">
             <el-row :gutter="10" style="margin-bottom:15px">
                 <!-- 发布预约信息 -->
@@ -69,12 +94,13 @@
                                 v-model="formPush.date"
                                 type="datetime"
                                 placeholder="选择日期时间"
-                                size="medium">
+                                size="medium"
+                                default-time="09:00:00">
                                 </el-date-picker> 
                             </el-form-item>
                             <el-form-item style="margin-left:-100px;margin-top:40px">
-                                <el-button type="primary">发布</el-button>
-                                <el-button>重置</el-button>
+                                <el-button type="primary" @click="push">发布</el-button>
+                                <el-button @click="reset">重置</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -93,12 +119,13 @@
 <script>
 
 import * as echarts from 'echarts';
+import request from '@/utils/request'
 
 export default {
     data() {
         return {
             formPush:{
-                date:''
+                date:new Date()
             },
             isbooking:'',     //查询预约情况默认为空
             optionBooking: [{                
@@ -111,35 +138,22 @@ export default {
                     isbooking: '未预约',
                     label: '未预约'
             }],
-            bookingItems:[{                         //预约情况列表
-                    id:'1',
-                    room:'咨询室1',
-                    date:'2022-04-26 15:00:00',
-                    isbooking:'已预约',
-                    name:'小小'
-                },{
-                    id:'2',
-                    room:'咨询室1',
-                    date:'2022-04-26 17:00:00',
-                    isbooking:'已预约',
-                    name:'小林'
-                },{
-                    id:'3',
-                    room:'咨询室1',
-                    date:'2022-04-27 9:00:00',
-                    isbooking:'未预约',
-                    name:''
-                },{
-                    id:'4',
-                    room:'咨询室1',
-                    date:'2022-04-27 15:00:00',
-                    isbooking:'已预约',
-                    name:'小B'
-                }
-            
-                
-            ]
+            bookingItems:[],  //预约情况列表
+            student:{},      //学生信息
+            user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
+            total:0,          //展示的数据总数
+            pageNum:1,        //默认在哪一页
+            pageSize:4,       //默认的页面中项目数
+            dialogFormVisible:false,   //对话框弹窗
+            bookingPush:{               //预约信息
+                time:"",
+                tno:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
+                isbooking:"未预约",
+            }
         }
+    },
+    created(){
+        this.load()
     },
     mounted() {
         //显示
@@ -186,17 +200,126 @@ export default {
                 labelLine: {
                     show: false
                 },
-                data: [
-                    { value: 4, name: '已预约'},
-                    { value: 12, name: '未预约'},
-                ]
+                data: []
                 }
             ]
         };
 
-        option && myChart.setOption(option);
-    }
+        //返回预约人数和未预约人数
+        request.get("/booking/count/"+this.user).then(res =>{
+            console.log(res.already)
+            console.log(res.no)
+            option.series[0].data = [
+                { value: res.already, name: '已预约'},
+                { value: res.no, name: '未预约'},
+            ]
+            option && myChart.setOption(option);
+        })
+    },
+    methods:{
+        load(){
+            //分页查询
+            request.get("/booking/page",{
+                    params:{
+                        pageNum: this.pageNum,
+                        pageSize: 4,
+                        isbooking: this.isbooking,
+                        tno: this.user 
+                    }
+                    }).then(res =>{
+                        console.log(res);
+                        this.bookingItems = JSON.parse(JSON.stringify(res.data));
+                        this.total = res.total;
+                    })
+            
+        },
+        //页面跳转相应（每页的总个数写定）
+        handleCurrentChange(pageNum){
+            console.log(pageNum)
+            this.pageNum = pageNum
+            this.load()
+        },
+        //根据预约状态搜索
+        search(){
+            this.load()
+        },
+        //查询学生信息
+        check(sno){
+            if(sno != null){
+                request.get("/students/search/" + sno).then(res =>{
+                    console.log(res)
+                    this.student = res
+                })
+                this.dialogFormVisible = true;
+            }
+            else{
+                this.$message.error("无预约学生，无法查看")
+            }
+        },
+        //预约信息删除
+        del(id){
+            request.delete("/booking/del/"+id).then(res =>{
+                if(res){
+                    this.$message.success("删除成功")
+                    this.pageNum = 1;   //回到第一页
+                    this.load();     //刷新页面
+                }
+                else{
+                this.$message.error("删除失败")
+                }
+            })
+        },
+        //发布信息框重置按钮
+        reset(){
+            this.formPush.date = ''
+        },
+        //发布信息
+        push(){
+            if(this.formPush.date != null){
+                //确定发布时间
+                this.bookingPush.time = this.formDate(this.formPush.date, "yyyy-MM-DD HH:mm:ss")
+                console.log(JSON.stringify(this.bookingPush))
+                request.post("/booking/insert",JSON.parse(JSON.stringify(this.bookingPush))).then(res =>{
+                    if(res){
+                        this.$message.success("新增成功")
+                        this.load();     //刷新页面
+                    }
+                    else{
+                    this.$message.error("新增失败")
+                    }
+                })
+            }
+        },
+        //时间戳转换为标准格式
+        formDate(data, format) {
+            let time = {
+                "M+": data.getMonth() + 1,
+                "D+": data.getDate(),
+                "H+": data.getHours(),
+                "m+": data.getMinutes(),
+                "s+": data.getSeconds(),
+            };
 
+            if (/(y+)/i.test(format)) {
+                format = format.replace(
+                    RegExp.$1,
+                    (data.getFullYear() + "").substr(4 - RegExp.$1.length)
+                );
+            }
+
+            for (let k in time) {
+                if (new RegExp("(" + k + ")").test(format)) {
+                    format = format.replace(
+                        RegExp.$1,
+                        RegExp.$1.length === 1
+                        ? time[k]
+                        : ("00" + time[k]).substr(("" + time[k]).length)
+                    );
+                }
+            }
+            return format;
+        }
+    }
 }
 </script>
 

@@ -38,7 +38,16 @@
                                 <div style="margin-bottom:15px; font-size:13px; color:#938a8a"><i class="el-icon-user-solid"/>  发布人：{{item.admin}}</div>
                                 <div style="margin-bottom:15px; font-size:13px; color:#938a8a" ><i class="el-icon-date"/>  发布时间：{{item.time}}</div>
                                 <el-button size="medium" type="primary" plain @click="detail(item)">查看量表详情</el-button>
-                                <el-button style="margin-left:20px" size="medium" type="danger" plain @click="del(item.tableid)">删除量表</el-button>
+                                <!-- 删除确认 -->
+                                <template>
+                                    <el-popconfirm
+                                        title="确定删除这张量表吗？"
+                                        @confirm = "del(item.tableid,item.admin)"
+                                        style="margin-left:10px"
+                                        >
+                                        <el-button slot="reference" style="margin-left:20px" size="medium" type="danger" plain>删除量表</el-button>
+                                    </el-popconfirm>
+                                </template>
                             </div>
                         </el-card>
                     </el-col>
@@ -56,7 +65,7 @@
             </el-card>
         </el-col>
 
-         <!-- 弹窗 -->
+        <!-- 弹窗 -->
         <el-dialog v-model="tableItem" title="量表详情" :visible.sync="dialogFormVisible" width="30%">
             <div style="margin-bottom:15px"><b>{{tableItem.title}}</b></div>
             <div style="margin-bottom:15px;">简介：{{tableItem.introduction}}</div>
@@ -134,6 +143,7 @@ export default {
         pageNum:1,        //默认在哪一页
         pageSize:4,       //默认的页面中项目数
         dialogFormVisible:false,   //对话框弹窗
+        user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
 
         titleOption:'心理压力测评表',     //图表显示的量表搜索框默认为空
         optionTable:[{
@@ -163,6 +173,7 @@ export default {
         this.pieShow()
     },
     methods: {
+        //加载
         load(){
             request.get("/test/page",{
                 params:{
@@ -192,17 +203,25 @@ export default {
             this.dialogFormVisible = true;
         },
         //量表删除
-        del(id){
-            request.delete("/test/del/"+id).then(res =>{
-                if(res){
-                    this.$message.success("删除成功")
-                    this.pageNum = 1;   //回到第一页
-                    this.load();     //刷新页面
+        del(id,admin){
+            request.get("/teacher/search/"+this.user).then(res =>{
+                if(res.username == admin){
+                    request.delete("/test/del/"+id).then(res =>{
+                        if(res){
+                            this.$message.success("删除成功")
+                            this.pageNum = 1;   //回到第一页
+                            this.load();     //刷新页面
+                        }
+                        else{
+                        this.$message.error("删除失败")
+                        }
+                    })
                 }
                 else{
-                this.$message.error("删除失败")
+                    this.$message.error("不可删除他人创建的量表")
                 }
             })
+            
         },
         //饼图搜索
         pieSearch(){

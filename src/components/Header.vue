@@ -34,7 +34,7 @@ export default {
         }
     },
     created(){
-        request.get("teacher/search/"+this.user).then(res =>{
+        request.get("/teacher/search/"+this.user).then(res =>{
             this.username = res.username
         })
     },
