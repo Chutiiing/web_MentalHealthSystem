@@ -305,27 +305,27 @@ export default {
             //新增
             if(this.flag){  
             this.form.password = "123456";              //默认密码
-            request.post("/students/insert",this.form).then(res =>{
-                if(res){
-                this.$message.success("新增成功")
-                this.load();     //刷新页面
-                }
-                else{
-                this.$message.error("新增失败")
-                }
-            })
+                request.post("/students/insert",this.form).then(res =>{
+                    if(res){
+                    this.$message.success("新增成功")
+                    this.load();     //刷新页面
+                    }
+                    else{
+                    this.$message.error("新增失败")
+                    }
+                })
             }
             //修改
             else{
-            request.post("/students/update",this.form).then(res =>{
-                if(res){
-                this.$message.success("修改成功")
-                this.load();     //刷新页面
-                }
-                else{
-                this.$message.error("修改失败")
-                }
-            })
+                request.post("/students/update",this.form).then(res =>{
+                    if(res){
+                    this.$message.success("修改成功")
+                    this.load();     //刷新页面
+                    }
+                    else{
+                    this.$message.error("修改失败")
+                    }
+                })
             }
         },
         //删除

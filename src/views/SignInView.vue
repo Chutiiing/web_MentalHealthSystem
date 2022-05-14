@@ -6,23 +6,23 @@
             <el-form :model="user" :rules="rules" ref="userForm">
                 <!-- 工号 -->
                 <el-form-item prop="tno">
-                    <el-input size="medium" style="margin: 5px 0" prefix-icon="el-icon-star-off" v-model="user.tno"></el-input>
+                    <el-input size="medium"  clearable=true style="margin: 5px 0" prefix-icon="el-icon-star-off" v-model="user.tno"></el-input>
                 </el-form-item>
                 <!-- 姓名 -->
                 <el-form-item prop="username">
-                    <el-input size="medium" style="margin: 5px 0" prefix-icon="el-icon-user" v-model="user.username"></el-input>
+                    <el-input size="medium" clearable=true style="margin: 5px 0" prefix-icon="el-icon-user" v-model="user.username"></el-input>
                 </el-form-item>
                 <!-- 密码 -->
                 <el-form-item prop="password">
-                    <el-input size="medium" style="margin: 5px 0" prefix-icon="el-icon-lock" show-password v-model="user.password"></el-input>
+                    <el-input size="medium" clearable=true style="margin: 5px 0" prefix-icon="el-icon-lock" show-password v-model="user.password"></el-input>
                 </el-form-item>
                 <!-- 电话 -->
                 <el-form-item prop="phone">
-                    <el-input size="medium" style="margin: 5px 0" prefix-icon="el-icon-phone-outline" v-model="user.phone"></el-input>
+                    <el-input size="medium" clearable=true style="margin: 5px 0" prefix-icon="el-icon-phone-outline" v-model="user.phone"></el-input>
                 </el-form-item>
                 <!-- 性别 -->
                 <el-form-item prop="sex">
-                    <el-select  size="medium" v-model="user.sex" placeholder="请选择性别">
+                    <el-select size="medium" v-model="user.sex" placeholder="请选择性别">
                         <el-option label="男" value="男"></el-option>
                         <el-option label="女" value="女"></el-option>
                     </el-select>
@@ -43,8 +43,8 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item style="margin: 10px 0; text-align: right">
-                <el-button type="primary" size="small"  autocomplete="off" @click="signIn">注册</el-button>
-                <el-button type="warning" size="small"  autocomplete="off" @click="back">返回登录</el-button>
+                    <el-button type="primary" size="small"  autocomplete="off" @click="signIn">注册</el-button>
+                    <el-button type="warning" size="small"  autocomplete="off" @click="back">返回登录</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -56,7 +56,7 @@
 import request from '@/utils/request'
 
 export default {
-    name:"login",
+    name:"signIn",
     data(){
         return {
             user:{

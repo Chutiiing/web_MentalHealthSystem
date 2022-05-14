@@ -7,7 +7,9 @@
         <el-dropdown style="width: 100px; cursor: pointer">
             <span>{{username}}</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
             <el-dropdown-menu slot="dropdown" style="width: 100px; text-align: center">
-                <el-dropdown-item style="font-size: 14px; padding: 5px 0">个人中心</el-dropdown-item>
+                <el-dropdown-item style="font-size: 14px; padding: 5px 0">
+                    <span style="text-decoration:none" @click="person">个人中心</span>
+                </el-dropdown-item>
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">
                     <span style="text-decoration:none" @click="loginOut">退出</span>
                 </el-dropdown-item>
@@ -46,6 +48,11 @@ export default {
             this.$router.push("/login")
             localStorage.removeItem("user")
             this.$message.success("退出成功")
+        },
+
+        //到个人中心
+        person() {
+            this.$router.push("/person")
         }
     }
 }

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
+
 import Aside from '@/components/Aside.vue'
 import Header from '@/components/Header.vue'
 
