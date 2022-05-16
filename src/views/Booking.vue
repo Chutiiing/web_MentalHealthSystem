@@ -95,7 +95,9 @@
                                 type="datetime"
                                 placeholder="选择日期时间"
                                 size="medium"
-                                default-time="09:00:00">
+                                default-time="09:00:00"
+                                :picker-options="startPickerOptions"
+                                >
                                 </el-date-picker> 
                             </el-form-item>
                             <el-form-item style="margin-left:-100px;margin-top:40px">
@@ -125,7 +127,7 @@ export default {
     data() {
         return {
             formPush:{
-                date:new Date()
+                date:''
             },
             isbooking:'',     //查询预约情况默认为空
             optionBooking: [{                
@@ -149,6 +151,13 @@ export default {
                 time:"",
                 tno:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
                 isbooking:"未预约",
+            },
+            minTime:new Date(),       //当前时间
+            startPickerOptions:{        //限制时间选择器范围
+                disabledDate: (time) => {
+                    // 最小时间减一天，防止当天日期无法选择
+                    return time.getTime() < this.minTime-24*3600000
+                }
             }
         }
     },
