@@ -79,18 +79,16 @@
         <el-col :span="8" style="margin-top:10px;">
              <!-- 导入文件 -->
             <el-row :gutter="10" style="margin-bottom:15px">
-                <el-card style="width:100%;">
+                <el-card style="width:100%;height:315px">
                     <div style="width:100%;text-align:center;">
                         <el-upload
                             class="upload-demo"
                             drag
-                            action="https://jsonplaceholder.typicode.com/posts/"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :before-remove="beforeRemove"
-                            multiple
-                            :limit="2"
-                            :on-exceed="handleExceed"
+                            action="http://localhost:9090/test/import"
+                            :data="uploadData"
+                            accept="xlsx"
+                            :on-success="handleExcelImportSuccess"
+                            :on-error="handleExcelImportError"
                             :file-list="fileList">
                             <i class="el-icon-upload"></i>
                             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -112,9 +110,9 @@
                             size="small">
                             <el-option
                                 v-for="item in optionTable"
-                                :key="item.titleOption"
-                                :label="item.label"
-                                :value="item.titleOption">
+                                :key="item"
+                                :label="item"
+                                :value="item">
                             </el-option>
                         </el-select>
                         <el-button style="margin-left:5px;" 
@@ -143,27 +141,16 @@ export default {
         pageNum:1,        //默认在哪一页
         pageSize:4,       //默认的页面中项目数
         dialogFormVisible:false,   //对话框弹窗
+        tableNew:{},      //新创建的量表
         user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
+        username:"?",
 
         titleOption:'心理压力测评表',     //图表显示的量表搜索框默认为空
-        optionTable:[{
-            titleOption:'心理压力测评表',
-            label:'心理压力测评表'
-        },{
-            titleOption:'Sarason考试焦虑量表(TAS)',
-            label:'Sarason考试焦虑量表(TAS)'
-        },{
-            titleOption:'焦虑自评量表 (SAS)',
-            label:'焦虑自评量表 (SAS)'
-        },{
-            titleOption:'人际信任量表',
-            label:'人际信任量表'
-        }],
+        optionTable:[],
 
-        fileList: [
-            {name: '焦虑自评量表 (SAS).xlsx', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
-            {name: '人际信任量表.xlsx', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-        ]
+        fileList: [],
+        user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
+        username:"?"
       };
     },
     created(){
@@ -175,6 +162,7 @@ export default {
     methods: {
         //加载
         load(){
+            //分页查询
             request.get("/test/page",{
                 params:{
                     pageNum: this.pageNum,
@@ -186,6 +174,15 @@ export default {
                     this.Tables = res.data;
                     this.total = res.total;
                 })
+            request.get("/teacher/search/"+this.user).then(res =>{
+                this.username = res.username
+            })
+            request.get("/test/findName").then(res =>{
+                console.log(res.title)
+                this.titleOption = res.title[0]
+                this.optionTable = res.title;
+            })
+
         },
         //页面跳转相应（每页的总个数写定）
         handleCurrentChange(pageNum){
@@ -213,7 +210,7 @@ export default {
                             this.load();     //刷新页面
                         }
                         else{
-                        this.$message.error("删除失败")
+                            this.$message.error("删除失败")
                         }
                     })
                 }
@@ -290,17 +287,28 @@ export default {
                 option && myChart.setOption(option);
             })
         },
-        handleRemove(file, fileList) {
-            console.log(file, fileList);
+        //上传成功
+        handleExcelImportSuccess(response){
+            if(response){
+                this.$message.success("导入成功")
+                this.load();
+            }
+            else{
+                this.fileList=[];
+                this.$message.error("导入失败，请检查是否重复导入")
+            }
+            
         },
-        handlePreview(file) {
-            console.log(file);
-        },
-        handleExceed(files, fileList) {
-            this.$message.warning(`当前限制选择 3 个文件`);
-        },
-        beforeRemove(file, fileList) {
-            return this.$confirm(`确定移除 ${ file.name }？`);
+        handleExcelImportError(){
+            this.$message.error("导入失败，请检查是否重复上传")
+        }
+    },
+    //上传参数
+    computed: {
+        uploadData(){
+            return{
+                admin:this.username
+            }
         }
     }
 }
