@@ -86,7 +86,13 @@
         <el-table-column prop="academy" label="学院" width="200"></el-table-column>
         <el-table-column prop="major" label="专业" width="150"></el-table-column>
         <el-table-column prop="grade" label="年级" width="150"></el-table-column>
-        <el-table-column prop="state" label="心理状态" width="160"></el-table-column>
+        <el-table-column prop="state" label="心理状态" width="160">
+            <template slot-scope="scope">
+                <el-tag :type="scope.row.state == '危险' ? 'danger' : 'success'">
+                    {{scope.row.state}}
+                </el-tag>
+            </template>
+        </el-table-column>
         <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.row)"></el-button>
