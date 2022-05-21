@@ -105,7 +105,7 @@
                     <div style="margin-top:5px; ">
                         <el-select v-model="titleOption" 
                             placeholder="选择量表"
-                            style="width:200px; margin-right:5px;"
+                            style="width:230px; margin-right:5px;"
                             prefix-icon="el-icon-collection-tag"
                             size="small">
                             <el-option
@@ -145,12 +145,10 @@ export default {
         user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
         username:"?",
 
-        titleOption:'心理压力测评表',     //图表显示的量表搜索框默认为空
+        titleOption:'心理压力测评表',     //图表显示的量表搜索框
         optionTable:[],
 
         fileList: [],
-        user:localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "",
-        username:"?"
       };
     },
     created(){
