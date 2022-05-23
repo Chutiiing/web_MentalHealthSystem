@@ -165,65 +165,7 @@ export default {
         this.load()
     },
     mounted() {
-        //显示
-        var chartDom = document.getElementById('pie');
-        var myChart = echarts.init(chartDom);
-        var option;
-
-        option = {
-            tooltip: {
-                trigger: 'item'
-            },
-            title: {
-                text: '预约情况',
-            },
-            legend: {
-                top: '8%',
-                left: 'center'
-            },
-            series: [
-                {
-                    type: 'pie',
-                    radius: ['50%', '70%'],
-                    avoidLabelOverlap: false,
-                    label: {
-                        show: false,
-                        position: 'center'
-                },
-                label:{            //饼图图形上的文本标签
-                    normal:{
-                        show:true,
-                        position:'inner', //标签的位置
-                        textStyle : {
-                            fontWeight : 300 ,
-                            fontSize : 11,    //文字的字体大小
-                            color: "#000"
-                        },
-                        formatter:'{d}%'
-                    }
-                },
-                color: [
-                            '#8caae7',
-                            '#bdd7f4'
-                        ],
-                labelLine: {
-                    show: false
-                },
-                data: []
-                }
-            ]
-        };
-
-        //返回预约人数和未预约人数
-        request.get("/booking/count/"+this.user).then(res =>{
-            console.log(res.already)
-            console.log(res.no)
-            option.series[0].data = [
-                { value: res.already, name: '已预约'},
-                { value: res.no, name: '未预约'},
-            ]
-            option && myChart.setOption(option);
-        })
+        this.pieShow()
     },
     methods:{
         load(){
@@ -292,6 +234,7 @@ export default {
                     if(res){
                         this.$message.success("新增成功")
                         this.load();     //刷新页面
+                        this.pieShow();
                     }
                     else{
                     this.$message.error("新增失败")
@@ -327,6 +270,67 @@ export default {
                 }
             }
             return format;
+        },
+        pieShow(){
+            //显示
+            var chartDom = document.getElementById('pie');
+            var myChart = echarts.init(chartDom);
+            var option;
+
+            option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                title: {
+                    text: '预约情况',
+                },
+                legend: {
+                    top: '8%',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: ['50%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                    },
+                    label:{            //饼图图形上的文本标签
+                        normal:{
+                            show:true,
+                            position:'inner', //标签的位置
+                            textStyle : {
+                                fontWeight : 300 ,
+                                fontSize : 11,    //文字的字体大小
+                                color: "#000"
+                            },
+                            formatter:'{d}%'
+                        }
+                    },
+                    color: [
+                                '#8caae7',
+                                '#bdd7f4'
+                            ],
+                    labelLine: {
+                        show: false
+                    },
+                    data: []
+                    }
+                ]
+            };
+
+            //返回预约人数和未预约人数
+            request.get("/booking/count/"+this.user).then(res =>{
+                console.log(res.already)
+                console.log(res.no)
+                option.series[0].data = [
+                    { value: res.already, name: '已预约'},
+                    { value: res.no, name: '未预约'},
+                ]
+                option && myChart.setOption(option);
+            })
         }
     }
 }

@@ -172,9 +172,11 @@ export default {
                     this.Tables = res.data;
                     this.total = res.total;
                 })
+            //获取教师姓名
             request.get("/teacher/search/"+this.user).then(res =>{
                 this.username = res.username
             })
+            //获取图表信息
             request.get("/test/findName").then(res =>{
                 console.log(res.title)
                 this.titleOption = res.title[0]
